@@ -66,4 +66,34 @@ export class UserService {
       throw new InternalServerErrorException('Erro ao criar usuario');
     }
   }
+
+  // async findUserByEmail(data: string) {
+  //   {
+  //     try {
+  //       const user = await this.prisma.user.findUnique({
+  //         where: {
+  //           email: data,
+  //         },
+  //       });
+
+  //       if (!user) {
+  //         throw new NotFoundException('Usuário inválido');
+  //       }
+
+  //       return user;
+  //     } catch (error) {
+  //       if (error instanceof HttpException) {
+  //         throw error;
+  //       }
+
+  //       throw new InternalServerErrorException('Error finding user');
+  //     }
+  //   }
+  // }
+
+  async findUserByEmail(email: string) {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
 }
