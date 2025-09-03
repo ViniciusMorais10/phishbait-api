@@ -24,38 +24,26 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+# 🛡️ PhishBait API
 
-## Installation
+Plataforma para simulação e rastreamento de ataques de phishing em ambiente corporativo.
 
-```bash
-$ pnpm install
-```
+## 📦 Tecnologias
+- [NestJS](https://nestjs.com/)
+- [Prisma ORM](https://www.prisma.io/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Docker](https://www.docker.com/)
+- [Jest](https://jestjs.io/)
 
-## Running the app
-
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
-```
-
-## Test
+## 🚀 Como iniciar
 
 ```bash
-# unit tests
-$ pnpm run test
+pnpm install
+cp .env.example .env
+docker-compose up -d
+pnpm prisma migrate dev
+pnpm start:dev
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
 ```
 
 ## Support
