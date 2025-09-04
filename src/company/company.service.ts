@@ -10,7 +10,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class CompanyService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(data: CreateCompanyDTO) {
+  async create(data: CreateCompanyDTO, user: string) {
     try {
       if (!data.name) {
         throw new HttpException(
@@ -36,6 +36,7 @@ export class CompanyService {
         data: {
           name: data.name,
           cnpj: data.cnpj,
+          createdBy: user,
         },
       });
     } catch (error) {

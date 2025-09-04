@@ -52,7 +52,7 @@ export class UserService {
         },
       });
 
-      const { password, ...safeUser } = newUser as any;
+      const { password: _password, ...safeUser } = newUser as any;
       return safeUser as SafeUser;
     } catch (error) {
       if (error instanceof HttpException) {
@@ -94,6 +94,23 @@ export class UserService {
   async findUserByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
+    });
+  }
+
+  async getAllUsers() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        team: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 }
