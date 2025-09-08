@@ -34,6 +34,7 @@ model Team {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   User      User[]
+  Simulation Simulation[]
 
   @@map("teams")
 }
@@ -62,9 +63,31 @@ model Session {
   createdAt    DateTime @default(now())
 }
 
+model Simulation {
+  id        String   @id @default(uuid())
+  name      String
+  description String
+  teamId String
+  createdBy String
+  status String @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team Team  @relation(fields: [teamId], references: [id])
+  
+  @@map("simulations")
+}
+
 enum Role {
   ADMIN
   MANAGER
   SECURITY_ANALYST
   USER
+}
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
