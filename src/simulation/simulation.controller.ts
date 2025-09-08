@@ -14,6 +14,7 @@ import { RolesGuard } from 'auth/guards/role.guards';
 import Roles from 'auth/decorators/roles.decorator';
 import { CurrentUser } from 'auth/decorators/current-user.decorator';
 import { StatusSimulationDTO } from './status-simulation.dto';
+import { CurrentUserPayload } from 'auth/types/current-user';
 
 @Controller('simulations')
 export class SimulationController {
@@ -24,7 +25,7 @@ export class SimulationController {
   @Post()
   async createSimulation(
     @Body() data: CreateSimulationDTO,
-    @CurrentUser() user: any,
+    @CurrentUser() user: CurrentUserPayload,
   ) {
     const { userId, teamId } = user;
 
@@ -33,14 +34,17 @@ export class SimulationController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getSimulations(@CurrentUser() user: any) {
+  async getSimulations(@CurrentUser() user: CurrentUserPayload) {
     const { role, teamId } = user;
     return this.simulationService.getSimulations(role, teamId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  async getSimultion(@Param('id') id: string, @CurrentUser() user: any) {
+  async getSimultion(
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
     return this.simulationService.getSimulation(id, user);
   }
 
@@ -48,9 +52,9 @@ export class SimulationController {
   @Patch('/:id/status')
   async changeSimulationStatus(
     @Param('id') id: string,
-    @CurrentUser() user: any,
+    @CurrentUser() user: CurrentUserPayload,
     @Body() status: StatusSimulationDTO,
   ) {
-    return this.simulationService.changeSimulationStatus(id, status, user);
+    return this.simulationService.updateSimulationStatus(id, status, user);
   }
 }

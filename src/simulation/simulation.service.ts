@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateSimulationDTO } from './create-simulation.dto';
 import { StatusSimulationDTO } from './status-simulation.dto';
+import { CurrentUserPayload } from 'auth/types/current-user';
 
 @Injectable()
 export class SimulationService {
@@ -39,7 +40,7 @@ export class SimulationService {
     return [];
   }
 
-  async getSimulation(id: string, user: any) {
+  async getSimulation(id: string, user: CurrentUserPayload) {
     const simulation = await this.prisma.simulation.findUnique({
       where: {
         id: id,
@@ -59,10 +60,10 @@ export class SimulationService {
     );
   }
 
-  async changeSimulationStatus(
+  async updateSimulationStatus(
     id: string,
     statusDto: StatusSimulationDTO,
-    user: any,
+    user: CurrentUserPayload,
   ) {
     const { status } = statusDto;
     const simulation = await this.prisma.simulation.findUnique({
@@ -71,19 +72,16 @@ export class SimulationService {
       },
     });
 
-    if (!simulation) {
-      throw new ForbiddenException('Simulation not found');
+    if (simulation.teamId !== user.teamId || user.role !== 'ADMIN') {
+      throw new ForbiddenException('Acess denied to update simulation status');
     }
-
-    if (simulation.teamId === user.teamId || user.role === 'ADMIN') {
-      return this.prisma.simulation.update({
-        where: {
-          id: id,
-        },
-        data: {
-          status: status,
-        },
-      });
-    }
+    return this.prisma.simulation.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status: status,
+      },
+    });
   }
 }
