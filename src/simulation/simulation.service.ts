@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateSimulationDTO } from './create-simulation.dto';
 import { StatusSimulationDTO } from './status-simulation.dto';
 import { CurrentUserPayload } from 'auth/types/current-user';
@@ -26,18 +26,10 @@ export class SimulationService {
   }
 
   async getSimulations(role: string, teamId: string) {
-    if (role === 'ADMIN') {
-      const simulations = await this.prisma.simulation.findMany();
-      return simulations;
-    } else if (role === 'USER') {
-      const simulations = await this.prisma.simulation.findMany({
-        where: {
-          teamId: teamId,
-        },
-      });
-      return simulations;
-    }
-    return [];
+    const where = role === 'ADMIN' ? {} : { teamId: teamId };
+    return this.prisma.simulation.findMany({
+      where: where,
+    });
   }
 
   async getSimulation(id: string, user: CurrentUserPayload) {
@@ -72,16 +64,19 @@ export class SimulationService {
       },
     });
 
-    if (simulation.teamId !== user.teamId || user.role !== 'ADMIN') {
-      throw new ForbiddenException('Acess denied to update simulation status');
+    if (!simulation) {
+      throw new ForbiddenException('Simulation not found');
     }
-    return this.prisma.simulation.update({
-      where: {
-        id: id,
-      },
-      data: {
-        status: status,
-      },
-    });
+
+    if (simulation.teamId === user.teamId || user.role === 'ADMIN') {
+      return this.prisma.simulation.update({
+        where: { id },
+        data: { status: status },
+      });
+    }
+
+    throw new ForbiddenException(
+      'Acesso negado para alterar o status da simulação',
+    );
   }
 }
